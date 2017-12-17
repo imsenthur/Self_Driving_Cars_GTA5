@@ -1,7 +1,5 @@
-from scipy.stats import linregress
 import numpy as np
 import cv2
-import os
 import math
 
 def region_of_interest(img, vertices):
