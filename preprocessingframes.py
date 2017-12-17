@@ -4,6 +4,10 @@ from PIL import ImageGrab
 import pyautogui
 import time
 from Input import PressKey, ReleaseKey, W, A, S, D
+import ROI as roi
+import COLORMASKING as mask
+
+
 
 def draw_lines(img, lines):
     try:
@@ -13,22 +17,26 @@ def draw_lines(img, lines):
     except:
         pass
 
-def roi(img, vertices):
-    mask = np.zeros_like(img)
-    cv2.fillPoly(mask, vertices, 255)
-    masked = cv2.bitwise_and(img, mask)
-    return masked
+def colorcorrection(img):
+    corrected_img = mask.equalize_histogram(img)
+    corrected_img = mask.clache(corrected_img)
+    corrected_img = mask.canny(corrected_img,200,300)
+    corrected_img = mask.gaussian_blur(corrected_img,3)
+    corrected_img = mask.bilateral(corrected_img)
+    corrected_img = mask.unsharp_mask(corrected_img,100)
+    return corrected_img   
 
 def preprocess_image(orig_img):
-    processed_img = cv2.cvtColor(orig_img, cv2.COLOR_BGR2GRAY)
-    processed_img = cv2.Canny(processed_img, threshold1 = 200, threshold2 = 300)
-    processed_img = cv2.GaussianBlur(processed_img, (5,5), 0)
+    white_value =180
+    processed_img = roi.crop(orig_img)
+    processed_img = mask.color_threshold(processed_img, white_value)
+    processed_img = colorcorrection(processed_img)
     
-    vertices = np.array([[10,550], [10,325], [300,325], [500,325], [800,325], [800,550]])
-    processed_img = roi(processed_img, [vertices])
+    #processed_img = cv2.Canny(orig_img, threshold1 = 200, threshold2 = 300)
+    #processed_img = cv2.GaussianBlur(processed_img, (5,5), 0)
 
-    lines = cv2.HoughLinesP(processed_img, 1, np.pi/180, 180, np.array([]), 100, 5)
-    draw_lines(processed_img, lines)
+    #lines = cv2.HoughLinesP(processed_img, 1, np.pi/180, 180, np.array([]), 100, 1)
+    #draw_lines(processed_img, lines)
     return processed_img
 
 while True:
