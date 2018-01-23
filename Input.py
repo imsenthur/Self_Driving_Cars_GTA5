@@ -8,7 +8,6 @@ import time
 
 SendInput = ctypes.windll.user32.SendInput
 
-
 W = 0x11
 A = 0x1E
 S = 0x1F
@@ -51,6 +50,33 @@ class Input(ctypes.Structure):
                 ("ii", Input_I)]
 
 # Actuals Functions
+
+def go_straight():
+    PressKey(W)
+    ReleaseKey(A)
+    ReleaseKey(S)
+    ReleaseKey(D)
+
+def go_right():
+    PressKey(D)
+    ReleaseKey(A)
+    ReleaseKey(S)
+    ReleaseKey(D)
+
+def go_left():
+    PressKey(A)
+    ReleaseKey(D)
+    ReleaseKey(S)
+    ReleaseKey(A)
+
+def slow_down():
+    ReleaseKey(W)
+    ReleaseKey(A)
+    ReleaseKey(S)
+    ReleaseKey(D)
+
+def stop():
+    pass
 
 def PressKey(hexKeyCode):
     extra = ctypes.c_ulong(0)
